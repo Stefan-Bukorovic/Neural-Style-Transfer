@@ -21,6 +21,8 @@ alpha = 1e5
 beta = 3e4
 #beta = 0
 num_of_steps = 2000
+
+
 learning_rate = 10
 
 #Device
