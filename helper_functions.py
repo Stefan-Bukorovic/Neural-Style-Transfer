@@ -52,20 +52,20 @@ def show_image(image):
 #Dimension of features is number_of_matrices x matrix_height x matrix_width
 def gram_matrix(input):
     batch, channel, height, width = input.size()
-
     features = input.view(channel, height * width)
-
     gram = torch.mm(features, features.t())
-
     return gram
 
 def extract_content_feature(model, image):
-    feature = model[:6](image).to(device)
+    #feature = model[:6](image).to(device)
+    image = model(image)
+    feature = getattr(image, 'conv4_2')
     return feature
 
 def extract_style_features(model, image):
-    conv_ind = [0, 5, 10, 19, 28]
     features = []
-    for ind in conv_ind:
-        features.append(model[:ind+1](image))
+    image = model(image)
+    conv_layers = ['conv1_1', 'conv2_1', 'conv3_1', 'conv4_1', 'conv5_1']
+    for layer in conv_layers:
+        features.append(getattr(image, layer))
     return features
