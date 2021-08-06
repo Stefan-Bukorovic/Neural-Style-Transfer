@@ -54,7 +54,10 @@ def calculate_style_loss(model, image1, image2):
         #temp_loss = torch.sum((gram_matrices1[i] - gram_matrices2[i]) ** 2)
         #temp_loss /= (4 * features1[i].shape[1]**2 * features1[i].shape[2]**2)
         #style_loss += 0.2 * temp_loss
-        style_loss += torch.nn.MSELoss(reduction='sum')(gram_matrices1[i], gram_matrices2[i])
+        temp_loss = 0
+        temp_loss += torch.nn.MSELoss(reduction='mean')(gram_matrices1[i], gram_matrices2[i])
+        temp_loss /= 4 * features1[i].shape[1] ** 2 * features1[i].shape[2] ** 2
+        style_loss += 0.2 * temp_loss
     style_loss /= len(features1[0])
     return style_loss
 
