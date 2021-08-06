@@ -16,11 +16,11 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 #Parameters
 
-alpha = 1e5
+alpha = 1
 #alpha = 0
-beta = 3e4
+beta = 1e6
 #beta = 0
-num_of_steps = 2000
+num_of_steps = 500
 
 
 learning_rate = 10
@@ -79,9 +79,10 @@ if __name__ == "__main__":
     content_image = func.load_image("data\content_1.jpeg").to(device)
     style_image = func.load_image("data\style_1.jpg").to(device)
 
-    noise_img = np.random.normal(loc=0, scale=90.,size=content_image.shape).astype(np.float32)
-    noise_img = torch.from_numpy(noise_img).float()
+    #noise_img = np.random.normal(loc=0, scale=90.,size=content_image.shape).astype(np.float32)
+    #noise_img = torch.from_numpy(noise_img).float()
 
-    generated_image = Variable(noise_img, requires_grad=True).to(device).detach().requires_grad_(True)
+    generated_image = func.load_image("data\content_1.jpeg")
+    generated_image = Variable(generated_image, requires_grad=True).to(device).detach().requires_grad_(True)
 
     train_model(model,  num_of_steps, content_image, style_image, generated_image, alpha, beta, learning_rate)

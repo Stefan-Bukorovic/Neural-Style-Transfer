@@ -50,18 +50,14 @@ def show_image(image):
 
 #Calculate gram matrix
 #Dimension of features is number_of_matrices x matrix_height x matrix_width
-def gram_matrix(features):
-    num_of_features = features.shape[0]
-    gram = torch.zeros(num_of_features, num_of_features)
+def gram_matrix(input):
+    batch, channel, height, width = input.size()
 
-    for i in range(num_of_features):
-        for j in range(num_of_features):
-            first_vec = torch.flatten(features[i])
-            second_vec = torch.flatten(features[j])
-            gram[i][j] = torch.dot(first_vec, second_vec)
+    features = input.view(channel, height * width)
+
+    gram = torch.mm(features, features.t())
 
     return gram
-
 
 def extract_content_feature(model, image):
     feature = model[:6](image).to(device)
