@@ -21,14 +21,15 @@ alpha = 1e5
 #alpha = 0
 beta = 3e4
 #beta = 0
-num_of_steps = 500
+num_of_steps = 300
 
 
 learning_rate = 10
 
 #Device
 device = torch.device("cuda" if cuda.is_available() else "cpu")
-
+#print(torch.cuda.get_device_name(0))
+#torch.cuda.empty_cache()
 #Model
 
 #model = models.vgg19(pretrained=True).to(device).features
@@ -75,18 +76,25 @@ def train_model(model, num_of_steps, img_content, img_style, generated_image, al
         print(i)
         optimizer.zero_grad()
         if(i % 500 == 0):
-            func.show_image(generated_image)
-    func.show_image(generated_image)
+            #func.show_image(generated_image)
+            plt.imshow(func.deprocess(generated_image))
+            plt.show()
+    #func.show_image(generated_image)
+    plt.imshow(func.deprocess(generated_image))
+    plt.show()
 
 
 if __name__ == "__main__":
-    content_image = func.load_image("data\content_4.jpg").to(device)
-    style_image = func.load_image("data\style_1.jpg").to(device)
+    #content_image = func.load_image("data\content_6.jpg").to(device)
+    #style_image = func.load_image("data\style_5.jpg").to(device)
+    content_image = func.preprocess("data\content_7.jpg", 800).to(device)
+    style_image = func.preprocess("data\style_7.jpg", 470).to(device)
 
     #noise_img = np.random.normal(loc=0, scale=90.,size=content_image.shape).astype(np.float32)
     #noise_img = torch.from_numpy(noise_img).float()
 
-    generated_image = func.load_image("data\content_4.jpg")
+    #generated_image = func.load_image("data\content_6.jpg")
+    generated_image = func.preprocess("data\content_7.jpg", 800)
     generated_image = Variable(generated_image, requires_grad=True).to(device).detach().requires_grad_(True)
-
+    #generated_image = Variable(noise_img, requires_grad=True).to(device).detach().requires_grad_(True)
     train_model(model,  num_of_steps, content_image, style_image, generated_image, alpha, beta, learning_rate)
