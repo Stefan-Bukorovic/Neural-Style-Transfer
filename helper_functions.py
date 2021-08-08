@@ -20,7 +20,7 @@ device = torch.device("cuda" if cuda.is_available() else "cpu")
 #Set of data transforms on loaded image
 
 data_transforms = transforms.Compose([
-        transforms.Resize([256, 256]),
+        #transforms.Resize([800, 600]),
         transforms.ToTensor(),
         transforms.Lambda(lambda x: x.mul(255)),
         transforms.Normalize(mean=IMAGENET_MEAN_1, std=IMAGENET_STD_1)

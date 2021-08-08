@@ -80,13 +80,13 @@ def train_model(model, num_of_steps, img_content, img_style, generated_image, al
 
 
 if __name__ == "__main__":
-    content_image = func.load_image("data\content_4.jpg").to(device)
-    style_image = func.load_image("data\style_1.jpg").to(device)
+    content_image = func.load_image("data\\bukva.jpeg").to(device)
+    style_image = func.load_image("data\\vrisak.jpg").to(device)
 
     #noise_img = np.random.normal(loc=0, scale=90.,size=content_image.shape).astype(np.float32)
     #noise_img = torch.from_numpy(noise_img).float()
 
-    generated_image = func.load_image("data\content_4.jpg")
+    generated_image = func.load_image("data\\bukva.jpeg")
     generated_image = Variable(generated_image, requires_grad=True).to(device).detach().requires_grad_(True)
 
     train_model(model,  num_of_steps, content_image, style_image, generated_image, alpha, beta, learning_rate)
