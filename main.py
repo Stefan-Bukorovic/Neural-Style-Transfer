@@ -21,10 +21,14 @@ alpha = 1e5
 #alpha = 0
 beta = 3e4
 #beta = 0
-num_of_steps = 1000
+num_of_steps = 300
 
 
 learning_rate = 10
+content_loss_epoch = []
+style_loss_epoch = []
+total_loss_epoch = []
+
 
 #Device
 device = torch.device("cuda" if cuda.is_available() else "cpu")
@@ -64,40 +68,53 @@ def calculate_style_loss(model, image1, image2):
     return style_loss
 
 def total_loss(model, img_content, img_style, generated_image, alfa, beta):
-    return alfa * calculate_content_loss(model, img_content, generated_image) + beta * calculate_style_loss(model, img_style, generated_image)
+    sloss = calculate_style_loss(model, img_style, generated_image)
+    closs = calculate_content_loss(model, img_content, generated_image)
+    content_loss_epoch.append(closs)
+    style_loss_epoch.append(sloss)
+    return alfa * closs + beta * sloss
 
 
-def train_model(model, num_of_steps, img_content, img_style, generated_image, alfa, beta, learning_rate):
-    optimizer = optim.Adam([generated_image], learning_rate)
+def train_model(model, num_of_steps, img_content, img_style, generated_image, alfa, beta, learning_rate, optimizer):
     for i in range(num_of_steps):
         loss = total_loss(model, img_content, img_style, generated_image, alfa, beta)
+        total_loss_epoch.append(loss)
         torch.cuda.empty_cache()
         loss.backward()
         optimizer.step()
         print(loss)
         print(i)
         optimizer.zero_grad()
-        if(i % 500 == 0):
+        if(i % 30 == 0):
             #func.5show_image(generated_image)
+            plt.figure(1)
             plt.imshow(func.deprocess(generated_image))
+            plt.savefig("D:\PSIML7\Project\Rezultati\gifs\grez{}.png".format(i))
             plt.show()
 
+
     #func.show_image(generated_image)
-    plt.imshow(func.deprocess(generated_image))
-    plt.show()
+    #plt.imshow(func.deprocess(generated_image))
+    #plt.show()
+    #fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10))
+    # content and style ims side-by-side
+    #ax1.imshow(func.deprocess(content_image))
+    #ax2.imshow(func.deprocess(generated_image))
+    #plt.show()
 
 
 if __name__ == "__main__":
     #content_image = func.load_image("data\content_6.jpg").to(device)
     #style_image = func.load_image("data\style_5.jpg").to(device)
-    content_image = func.preprocess("data\content_9.png", 512).to(device)
-    style_image = func.preprocess("data\style_8.png", 512).to(device)
+    content_image = func.preprocess("data\content_7.jpg", 256).to(device)
+    style_image = func.preprocess("data\style_7.jpg", 256).to(device)
 
     #noise_img = np.random.normal(loc=0, scale=90.,size=content_image.shape).astype(np.float32)
     #noise_img = torch.from_numpy(noise_img).float()
 
     #generated_image = func.load_image("data\content_6.jpg")
-    generated_image = func.preprocess("data\content_9.png", 512)
+    generated_image = func.preprocess("data\content_7.jpg", 256)
     generated_image = Variable(generated_image, requires_grad=True).to(device).detach().requires_grad_(True)
+    optimizer = optim.Adam([generated_image], learning_rate)
     #generated_image = Variable(noise_img, requires_grad=True).to(device).detach().requires_grad_(True)
-    train_model(model,  num_of_steps, content_image, style_image, generated_image, alpha, beta, learning_rate)
+    train_model(model,  num_of_steps, content_image, style_image, generated_image, alpha, beta, learning_rate, optimizer)
