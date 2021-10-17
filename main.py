@@ -32,13 +32,11 @@ total_loss_epoch = []
 
 #Device
 device = torch.device("cuda" if cuda.is_available() else "cpu")
-#device = torch.device("cpu")
-#print(torch.cuda.get_device_name(0))
-#torch.cuda.empty_cache()
+
 #Model
 
 #model = models.vgg19(pretrained=True).to(device).features
-model = vgg19(require_grad=False).eval().to(device)
+model = vgg19().to(device)
 
 def calculate_content_loss(model, image1, image2):
     feature1 = func.extract_content_feature(model, image1).squeeze(0)
